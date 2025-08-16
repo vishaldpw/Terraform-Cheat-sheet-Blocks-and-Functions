@@ -1,4 +1,4 @@
-# 🧾 Terraform Blocks Cheat Sheet
+# 🧾 Terraform  Cheat Sheet
 
 Terraform code is made of **blocks**. Each block has a purpose:  
 some set **settings**, some **build infra**, some **control behavior**.
