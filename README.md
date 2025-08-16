@@ -131,4 +131,159 @@ They make code **shorter, smarter, reusable**.
 - Start with: `terraform`, `provider`, `resource`, `variable`, `output`.  
 - Add advanced ones (`module`, `count`, `for_each`) once comfortable.  
 - Avoid `provisioner` unless testing (use Ansible/Puppet for setup).  
-- Always check **terraform plan** before apply 🚀.  
+- Always check **terraform plan** before apply 🚀.
+
+
+# Terraform Functions Cheat Sheet (AWS-focused)
+
+This document explains common Terraform functions in **simple words**, focusing on how they are often used in **AWS** projects.  
+
+---
+
+## 1. `toset()`
+**Description:** Converts a list into a set (unique values, no duplicates).  
+**What It Does (Simple Words):**  
+- Removes duplicates and makes items unordered.  
+- Useful when looping over AWS resources (like multiple subnets).  
+
+---
+
+## 2. `tolist()`
+**Description:** Converts a set or tuple into a list.  
+**What It Does (Simple Words):**  
+- Makes sure data is in list format (ordered, can have duplicates).  
+- Often used to loop AWS resources in order.  
+
+---
+
+## 3. `tomap()`
+**Description:** Converts a list of key/value pairs into a map.  
+**What It Does (Simple Words):**  
+- Helps store AWS values like `{ "Name" = "EC2", "Env" = "Dev" }`.  
+- Commonly used for AWS **tags**.  
+
+---
+
+## 4. `tostring()`
+**Description:** Converts any value to a string.  
+**What It Does (Simple Words):**  
+- Makes sure numbers, IDs, or bools are in text format.  
+- Example: converting AWS instance IDs to strings for tagging.  
+
+---
+
+## 5. `tonumber()`
+**Description:** Converts a string into a number.  
+**What It Does (Simple Words):**  
+- Helps when AWS values (like port `"80"`) need to be numbers.  
+- Example: setting security group rules with numeric ports.  
+
+---
+
+## 6. `try()`
+**Description:** Tries multiple values and picks the first valid one.  
+**What It Does (Simple Words):**  
+- Useful when something may not exist.  
+- Example: `try(module.vpc.private_subnets, [])` → picks subnets if exist, else empty list.  
+
+---
+
+## 7. `coalesce()`
+**Description:** Returns the first non-null value.  
+**What It Does (Simple Words):**  
+- Picks the first valid AWS value.  
+- Example: `coalesce(var.instance_type, "t2.micro")` → fallback default.  
+
+---
+
+## 8. `concat()`
+**Description:** Joins multiple lists together.  
+**What It Does (Simple Words):**  
+- Used to merge AWS subnet lists or SG rules.  
+- Example: combine public + private subnets.  
+
+---
+
+## 9. `merge()`
+**Description:** Combines two or more maps.  
+**What It Does (Simple Words):**  
+- Used to merge AWS **tags** from multiple sources.  
+- Example: merge default tags with environment tags.  
+
+---
+
+## 10. `length()`
+**Description:** Returns how many items are in a list, map, or string.  
+**What It Does (Simple Words):**  
+- Often used in AWS loops (like number of subnets).  
+- Example: `length(var.subnets)` = total subnets.  
+
+---
+
+## 11. `element()`
+**Description:** Picks an item from a list by its index.  
+**What It Does (Simple Words):**  
+- Helps pick specific AWS subnet or AZ from a list.  
+- Example: `element(var.subnets, 0)` = first subnet.  
+
+---
+
+## 12. `lookup()`
+**Description:** Gets a value from a map by its key.  
+**What It Does (Simple Words):**  
+- Helps fetch AWS config values.  
+- Example: `lookup(var.tags, "Environment", "dev")`.  
+
+---
+
+## 13. `join()`
+**Description:** Joins list elements into a string with a separator.  
+**What It Does (Simple Words):**  
+- Useful for AWS names or tags.  
+- Example: `join("-", ["dev", "app", "ec2"])` → `dev-app-ec2`.  
+
+---
+
+## 14. `split()`
+**Description:** Splits a string into a list.  
+**What It Does (Simple Words):**  
+- Opposite of `join()`.  
+- Example: split an AWS ARN into parts.  
+
+---
+
+## 15. `file()`
+**Description:** Reads the contents of a file.  
+**What It Does (Simple Words):**  
+- Used for AWS **user_data** scripts or policy files.  
+- Example: `file("userdata.sh")`.  
+
+---
+
+## 16. `cidrsubnet()`
+**Description:** Splits a CIDR block into smaller subnets.  
+**What It Does (Simple Words):**  
+- Helps create AWS VPC subnets automatically.  
+- Example: Split `10.0.0.0/16` into `/24` subnets.  
+
+---
+
+## 17. `regex()`
+**Description:** Extracts values using a regex pattern.  
+**What It Does (Simple Words):**  
+- Helps when parsing AWS ARNs, names, or IDs.  
+- Example: Extract account ID from an ARN.  
+
+---
+
+## 18. `format()`
+**Description:** Formats strings with placeholders.  
+**What It Does (Simple Words):**  
+- Helps build AWS names consistently.  
+- Example: `format("%s-%s", var.env, "ec2")` → `dev-ec2`.  
+
+---
+
+# 📌 Summary  
+These functions make Terraform flexible by converting data types, looping, merging, and formatting values. In AWS projects, they are most often used for **subnets, tags, names, security groups, and instance configurations**.  
+
