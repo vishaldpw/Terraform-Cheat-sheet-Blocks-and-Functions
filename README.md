@@ -31,5 +31,4 @@
 - **Provisioner / connection / dynamic** → advanced tweaks.  
 - **Moved / import / check / lifecycle / depends_on** → special handling.  
 - **Count / for_each** → loops for infra.
-# terraform-Cheat-sheet-Blocks
-terraform-Cheat-sheet For quick reference for Blocks
+
