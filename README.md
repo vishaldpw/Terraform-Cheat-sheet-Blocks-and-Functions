@@ -1,4 +1,4 @@
-# 🧾 Terraform  Cheat Sheet
+# 🧾 Terraform Cheat Sheet
 
 Terraform code is made of **blocks**. Each block has a purpose:  
 some set **settings**, some **build infra**, some **control behavior**.
@@ -7,38 +7,39 @@ some set **settings**, some **build infra**, some **control behavior**.
 
 ## 🔹 Core Blocks (Most Used)
 
-| Block / Meta-Arg   | What It Does (Simple Words) | Example Use |
-|---------------------|-----------------------------|-------------|
-| **terraform**       | Settings for Terraform itself (version, providers, backend). | `terraform { required_version = ">= 1.3" }` |
-| **provider**        | Connects Terraform to a cloud/service (AWS, Azure, GCP, GitHub…). | `provider "aws" { region = "us-east-1" }` |
-| **resource**        | The real "things" Terraform builds (VMs, S3 buckets, VPCs…). | `resource "aws_instance" "vm" { ... }` |
-| **data**            | Reads existing resources (without creating new ones). | `data "aws_ami" "ubuntu" { ... }` |
-| **variable**        | Inputs to make code reusable (like function arguments). | `variable "instance_type" { default = "t2.micro" }` |
-| **output**          | Prints useful info after apply (like IPs, IDs). | `output "ip" { value = aws_instance.vm.public_ip }` |
-| **locals**          | Helper values inside config (shortcuts, naming). | `locals { env = "dev" }` |
-| **module**          | Reuse another Terraform config (like calling a function). | `module "vpc" { source = "terraform-aws-modules/vpc/aws" }` |
-| **backend** (inside `terraform`) | Where Terraform state file is stored (local/S3/etc.). | `backend "s3" { bucket = "mybucket" }` |
+| Block / Meta-Arg   | What It Does (Simple Words) | Common Inside It | Example Use |
+|---------------------|-----------------------------|------------------|-------------|
+| **terraform**       | Settings for Terraform itself (version, providers, backend). | `required_version`, `required_providers`, `backend` | `terraform { required_version = ">= 1.3" }` |
+| **provider**        | Connects Terraform to a cloud/service (AWS, Azure, GCP, GitHub…). | `region`, `profile`, `access_key`, `secret_key`, `default_tags` | `provider "aws" { region = "us-east-1" }` |
+| **resource**        | The real "things" Terraform builds (VMs, S3 buckets, VPCs…). | Resource-specific arguments (e.g., `ami`, `instance_type`, `tags`) | `resource "aws_instance" "vm" { ... }` |
+| **data**            | Reads existing resources (without creating new ones). | Provider-specific lookups (e.g., `filter`, `most_recent`, `tags`) | `data "aws_ami" "ubuntu" { ... }` |
+| **variable**        | Inputs to make code reusable (like function arguments). | `type`, `default`, `description`, `sensitive` | `variable "instance_type" { default = "t2.micro" }` |
+| **output**          | Prints useful info after apply (like IPs, IDs). | `value`, `description`, `sensitive` | `output "ip" { value = aws_instance.vm.public_ip }` |
+| **locals**          | Helper values inside config (shortcuts, naming). | Key-value pairs | `locals { env = "dev" }` |
+| **module**          | Reuse another Terraform config (like calling a function). | `source`, `version`, variables | `module "vpc" { source = "terraform-aws-modules/vpc/aws" }` |
+| **backend** (inside `terraform`) | Where Terraform state file is stored (local/S3/etc.). | `bucket`, `key`, `region`, `dynamodb_table` (for locking) | `backend "s3" { bucket = "mybucket" }` |
 
 ---
 
 ## 🔹 Advanced / Special Blocks
 
-| Block / Meta-Arg   | What It Does | Example Use |
-|---------------------|-------------|-------------|
-| **provisioner**     | Runs scripts after resource create/destroy (not recommended for production). | Install a package on EC2 after launch. |
-| **connection**      | Defines how to connect (SSH/WinRM) for provisioners. | `connection { type = "ssh" user = "ec2-user" }` |
-| **dynamic**         | Generates repeated blocks with loops. | Multiple security group rules from a list. |
-| **moved**           | Marks a resource as renamed → avoids destroy/recreate. | `moved { from = aws_instance.old to = aws_instance.new }` |
-| **import**          | Bring an existing resource under Terraform management. | Import a manually-created EC2 into state. |
-| **check**           | Verify conditions after apply. | Ensure a deployed URL is reachable. |
-| **lifecycle** (inside resource) | Control behavior (keep resource, replace before destroy, ignore changes). | `prevent_destroy = true` for S3 bucket. |
-| **depends_on**      | Force order of creation. | Ensure IAM role is created before EC2. |
-| **count**           | Create many resources by number. | `count = 3` → 3 EC2 instances. |
-| **for_each**        | Create resources from a list/map (better than `count` when naming matters). | `for_each = toset(var.names)` |
+| Block / Meta-Arg   | What It Does | Common Inside It | Example Use |
+|---------------------|-------------|------------------|-------------|
+| **provisioner**     | Runs scripts after resource create/destroy (not recommended for production). | `inline`, `script`, `file` | Install a package on EC2 after launch. |
+| **connection**      | Defines how to connect (SSH/WinRM) for provisioners. | `type`, `user`, `password`, `private_key`, `host` | `connection { type = "ssh" user = "ec2-user" }` |
+| **dynamic**         | Generates repeated blocks with loops. | `for_each`, `content` | Multiple security group rules from a list. |
+| **moved**           | Marks a resource as renamed → avoids destroy/recreate. | `from`, `to` | `moved { from = aws_instance.old to = aws_instance.new }` |
+| **import**          | Bring an existing resource under Terraform management. | CLI: `terraform import <resource> <id>` | Import a manually-created EC2 into state. |
+| **check**           | Verify conditions after apply. | `assert`, `condition`, `error_message` | Ensure a deployed URL is reachable. |
+| **lifecycle** (inside resource) | Control behavior (keep resource, replace before destroy, ignore changes). | `prevent_destroy`, `create_before_destroy`, `ignore_changes` | `prevent_destroy = true` for S3 bucket. |
+| **depends_on**      | Force order of creation. | List of resources/modules | Ensure IAM role is created before EC2. |
+| **count**           | Create many resources by number. | Any number/int expression | `count = 3` → 3 EC2 instances. |
+| **for_each**        | Create resources from a list/map (better than count when naming matters). | Maps/Sets | `for_each = toset(var.names)` |
 
 ---
 
 ## ⚡ Quick Memory Tip
+
 - **terraform / provider / backend** → settings.  
 - **resource / data / module** → build infra.  
 - **variable / locals / output** → inputs & outputs.  
@@ -46,7 +47,6 @@ some set **settings**, some **build infra**, some **control behavior**.
 - **moved / import / check / lifecycle / depends_on** → advanced handling.  
 - **count / for_each** → loops.  
 
----
 
 # ⚙️ Terraform Functions Cheat Sheet
 
